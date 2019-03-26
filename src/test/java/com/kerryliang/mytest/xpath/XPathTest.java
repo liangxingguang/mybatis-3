@@ -2,6 +2,7 @@ package com.kerryliang.mytest.xpath;
 
 import org.apache.ibatis.io.Resources;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
@@ -52,14 +53,18 @@ public class XPathTest {
         XPath xPath = factory.newXPath();
 
 
-        XPathExpression expr = xPath.compile("//book[author='Neal Stephenson']/title/text()");
+        XPathExpression expr = xPath.compile("//book");
         Object result = expr.evaluate(doc, XPathConstants.NODESET);
         System.out.println("查询作者为Neal Stephenson的图书的标题:");
         NodeList nodes = (NodeList) result;
         for (int i = 0; i < nodes.getLength(); i++) {
-            System.out.println(nodes.item(i).getNodeValue());
+            Node node = nodes.item(i);
+            System.out.println("nodeName=" + node.getNodeName());
+            System.out.println("BaseURI=" + node.getBaseURI());
+            System.out.println("nodeValue=" + node.getNodeValue());
         }
 
+        System.out.println("###############################");
         System.out.println("查询1997年之后的图书的标题:");
         nodes = (NodeList) xPath.evaluate("//book[@year>1997]/title/text()",
                 doc, XPathConstants.NODESET);
@@ -67,6 +72,7 @@ public class XPathTest {
             System.out.println(nodes.item(i).getNodeValue());
         }
 
+        System.out.println("###############################");
         System.out.println("查询1997年之后的图书的标题和属性:");
         nodes = (NodeList) xPath.evaluate("//book[@year>1997]/@*|//book[@year>1997]/title/text()",
                 doc, XPathConstants.NODESET);
