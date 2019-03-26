@@ -1,9 +1,7 @@
- ##xpath学习笔记  
-  
+xpath学习笔记  
+=====================================  
 
----  
-
- ###Xpath是什么  
+ Xpath是什么  
 
 在XSLT的标准中,Xpath是其中一个主要部分。Xpath用于访问XML文档中的属性和元素。通过使用
 “path Expression”的表达式去确定和访问xml文档中的节点。“path Expression”
