@@ -20,8 +20,11 @@ package org.apache.ibatis.parsing;
  */
 public class GenericTokenParser {
 
+  //占位符的开始标记
   private final String openToken;
+  //占位符的结束标记
   private final String closeToken;
+  //处理接口逻辑实现
   private final TokenHandler handler;
 
   public GenericTokenParser(String openToken, String closeToken, TokenHandler handler) {
@@ -61,10 +64,12 @@ public class GenericTokenParser {
         while (end > -1) {
           if (end > offset && src[end - 1] == '\\') {
             // this close token is escaped. remove the backslash and continue.
+            //处理转义的结束标记
             expression.append(src, offset, end - offset - 1).append(closeToken);
             offset = end + closeToken.length();
             end = text.indexOf(closeToken, offset);
           } else {
+            //将开始标记和结束标记之间的字符串追加到 expression 中保存
             expression.append(src, offset, end - offset);
             offset = end + closeToken.length();
             break;
@@ -75,6 +80,8 @@ public class GenericTokenParser {
           builder.append(src, start, src.length - start);
           offset = src.length;
         } else {
+          //将占位符的字面值交给 TokenHandler 处理，并将处理结果追加到 builder 中保存
+          //最终拼凑出解析后的完整内容
           builder.append(handler.handleToken(expression.toString()));
           offset = end + closeToken.length();
         }
