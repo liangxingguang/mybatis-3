@@ -41,24 +41,35 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
 /**
  * This class represents a cached set of class definition information that
  * allows for easy mapping between property names and getter/setter methods.
- *
+ * 一个class对象被封装成一个Reflector
  * @author Clinton Begin
  */
 public class Reflector {
 
+  //class类对象的类型
   private final Class<?> type;
+  //可读属性的名称集合，可读属性：存在geter方法的属性
   private final String[] readablePropertyNames;
+  //可写属性的名称集合，可写属性：存在seter方法的属性
   private final String[] writablePropertyNames;
+  //记录属性对应的seter方法，key：属性名称，value：Invoker为Method对象的封装
   private final Map<String, Invoker> setMethods = new HashMap<>();
+  //记录属性对应的geter方法，key：属性名称，value：Invoker为Method对象的封装
   private final Map<String, Invoker> getMethods = new HashMap<>();
+  //记录属性相应seter方法的参数值类型，key：属性名称 value：参数类型
   private final Map<String, Class<?>> setTypes = new HashMap<>();
+  //记录属性相应geter方法的参数值类型，key：属性名称 value：参数类型
   private final Map<String, Class<?>> getTypes = new HashMap<>();
+  //默认构造函数
   private Constructor<?> defaultConstructor;
 
+  //记录所有属性名称的集合
   private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 
   public Reflector(Class<?> clazz) {
+    //初始化class类型
     type = clazz;
+    //设置类对象的默认构造函数
     addDefaultConstructor(clazz);
     addGetMethods(clazz);
     addSetMethods(clazz);
@@ -73,6 +84,11 @@ public class Reflector {
     }
   }
 
+  /**
+   * 设置class对象的默认构造函数，通过getDeclaredConstructors获取类所有构造函数，其中参数为0的为
+   * 默认构造函数
+   * @param clazz
+   */
   private void addDefaultConstructor(Class<?> clazz) {
     Constructor<?>[] consts = clazz.getDeclaredConstructors();
     for (Constructor<?> constructor : consts) {
@@ -86,10 +102,12 @@ public class Reflector {
     Map<String, List<Method>> conflictingGetters = new HashMap<>();
     Method[] methods = getClassMethods(cls);
     for (Method method : methods) {
+      //按照javabean约定，geter方法是不带参数的
       if (method.getParameterTypes().length > 0) {
         continue;
       }
       String name = method.getName();
+      //判断是否是以get或is开头
       if ((name.startsWith("get") && name.length() > 3)
           || (name.startsWith("is") && name.length() > 2)) {
         name = PropertyNamer.methodToProperty(name);
@@ -100,6 +118,7 @@ public class Reflector {
   }
 
   private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
+    //处理某个属性下面存在多个geter或setter方法的情况
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
       Method winner = null;
       String propName = entry.getKey();
@@ -110,18 +129,25 @@ public class Reflector {
         }
         Class<?> winnerType = winner.getReturnType();
         Class<?> candidateType = candidate.getReturnType();
+
         if (candidateType.equals(winnerType)) {
+          //如果返回值类型相同
+          //如果返回值不是boolean类型，则说明有两个函数返回时相同的，这个时候需要报错。
           if (!boolean.class.equals(candidateType)) {
             throw new ReflectionException(
                 "Illegal overloaded getter method with ambiguous type for property "
                     + propName + " in class " + winner.getDeclaringClass()
                     + ". This breaks the JavaBeans specification and can cause unpredictable results.");
           } else if (candidate.getName().startsWith("is")) {
+            //取is开头的方法
             winner = candidate;
           }
         } else if (candidateType.isAssignableFrom(winnerType)) {
+          // 当前最适合的方法的返回佳是当前方法返回佳的子类，什么都不做，当前最适合的方法
           // OK getter type is descendant
         } else if (winnerType.isAssignableFrom(candidateType)) {
+          //当前方法的返回值是当前最适合的方法的返回值的父类，将最适合方法的值设置为当前方法。
+          //取返回值为子类那个方法
           winner = candidate;
         } else {
           throw new ReflectionException(
