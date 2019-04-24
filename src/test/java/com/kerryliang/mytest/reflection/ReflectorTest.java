@@ -5,6 +5,9 @@ import org.apache.ibatis.reflection.Reflector;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ReflectorTest {
@@ -12,6 +15,8 @@ public class ReflectorTest {
     class A {
         private String name1;
         private String name2;
+
+        private List<String> nameList;
 
         public A() {
 
@@ -41,12 +46,26 @@ public class ReflectorTest {
         public void setName2(String name2) {
             this.name2 = name2;
         }
+
+        public List<String> getNameList() {
+            return nameList;
+        }
+
+        public void setNameList(List<String> nameList) {
+            this.nameList = nameList;
+        }
     }
 
     class B extends A {
 
         public B(String name1) {
         }
+
+        public ArrayList<String> getNameList() {
+            return new ArrayList<>();
+        }
+
+
 
     }
 

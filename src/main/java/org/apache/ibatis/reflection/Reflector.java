@@ -110,6 +110,7 @@ public class Reflector {
       //判断是否是以get或is开头
       if ((name.startsWith("get") && name.length() > 3)
           || (name.startsWith("is") && name.length() > 2)) {
+        //根据geter方法名获取类属性名称
         name = PropertyNamer.methodToProperty(name);
         addMethodConflict(conflictingGetters, name, method);
       }
@@ -121,7 +122,13 @@ public class Reflector {
     //处理某个属性下面存在多个geter或setter方法的情况
     for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
       Method winner = null;
+      //类属性名称
       String propName = entry.getKey();
+      //如果该类属性名称下面有多个getter方法，则取最合适那个方法
+      //出现这个情况是：当子类sub覆盖父类中的方法并且返回值不同时
+      //例如在子类中的方法list<String> getNames,而父类中为:ArrayList<String> getNames
+      //那么在conflictingGetters中names就存在两个不同的方法，这样就存在歧义，这个方法就是
+      //为了消除这样的歧义
       for (Method candidate : entry.getValue()) {
         if (winner == null) {
           winner = candidate;
@@ -143,7 +150,7 @@ public class Reflector {
             winner = candidate;
           }
         } else if (candidateType.isAssignableFrom(winnerType)) {
-          // 当前最适合的方法的返回佳是当前方法返回佳的子类，什么都不做，当前最适合的方法
+          // 当前最适合的方法的返回值是当前方法返回值的子类，什么都不做，当前最适合的方法
           // OK getter type is descendant
         } else if (winnerType.isAssignableFrom(candidateType)) {
           //当前方法的返回值是当前最适合的方法的返回值的父类，将最适合方法的值设置为当前方法。
@@ -161,8 +168,11 @@ public class Reflector {
   }
 
   private void addGetMethod(String name, Method method) {
+    //判断该属性是不是有效属性
     if (isValidPropertyName(name)) {
+      //将method封装成MethodInvoker对象
       getMethods.put(name, new MethodInvoker(method));
+      //获取getter函数的返回值，然后保存到map中
       Type returnType = TypeParameterResolver.resolveReturnType(method, type);
       getTypes.put(name, typeToClass(returnType));
     }
@@ -170,11 +180,13 @@ public class Reflector {
 
   private void addSetMethods(Class<?> cls) {
     Map<String, List<Method>> conflictingSetters = new HashMap<>();
+    //获取cls及其父类所有方法
     Method[] methods = getClassMethods(cls);
     for (Method method : methods) {
       String name = method.getName();
       if (name.startsWith("set") && name.length() > 3) {
         if (method.getParameterTypes().length == 1) {
+          //判断是不是seter方法并根据seter方法获取对应的类属性名称
           name = PropertyNamer.methodToProperty(name);
           addMethodConflict(conflictingSetters, name, method);
         }
@@ -184,6 +196,9 @@ public class Reflector {
   }
 
   private void addMethodConflict(Map<String, List<Method>> conflictingMethods, String name, Method method) {
+
+    //这个方法是意思为：如果这个key的value不为null，则返回对应的value，如果是null，
+    //这调用对应的方法，并将该方法的返回值保存到name对应的key的value中
     List<Method> list = conflictingMethods.computeIfAbsent(name, k -> new ArrayList<>());
     list.add(method);
   }
@@ -315,6 +330,7 @@ public class Reflector {
    * @return An array containing all methods in this class
    */
   private Method[] getClassMethods(Class<?> cls) {
+    //返回cls及其父类的所有类方法
     Map<String, Method> uniqueMethods = new HashMap<>();
     Class<?> currentClass = cls;
     while (currentClass != null && currentClass != Object.class) {
@@ -349,6 +365,8 @@ public class Reflector {
     }
   }
 
+  //获取类方法的签名
+  //签名格式为:返回类型#方法名:参数1，参数2
   private String getSignature(Method method) {
     StringBuilder sb = new StringBuilder();
     Class<?> returnType = method.getReturnType();
