@@ -172,6 +172,7 @@ public class BeanWrapper extends BaseWrapper {
     }
   }
 
+
   private void setBeanProperty(PropertyTokenizer prop, Object object, Object value) {
     try {
       Invoker method = metaClass.getSetInvoker(prop.getName());
