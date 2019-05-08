@@ -44,6 +44,7 @@
 
     <mappers>
         <mapper resource="com/kerryliang/mytest/mysql/userMapper.xml"/>
+        <mapper resource="com/kerryliang/mytest/mysql/countryMapper.xml"/>
     </mappers>
 
 </configuration>
