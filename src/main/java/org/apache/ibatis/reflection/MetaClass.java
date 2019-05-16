@@ -29,6 +29,10 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 /**
  * @author Clinton Begin
  */
+
+/**
+ * 通过Reflector和PropertyTokenizer的结合使用，实现对复杂表达式的解析
+ */
 public class MetaClass {
 
   private final ReflectorFactory reflectorFactory;
