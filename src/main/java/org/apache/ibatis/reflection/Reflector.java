@@ -71,7 +71,9 @@ public class Reflector {
     type = clazz;
     //设置类对象的默认构造函数
     addDefaultConstructor(clazz);
+    //查找getter方法并将其保存起来
     addGetMethods(clazz);
+    //查总setter方法并将其保存起来
     addSetMethods(clazz);
     addFields(clazz);
     readablePropertyNames = getMethods.keySet().toArray(new String[getMethods.keySet().size()]);
@@ -188,10 +190,12 @@ public class Reflector {
         if (method.getParameterTypes().length == 1) {
           //判断是不是seter方法并根据seter方法获取对应的类属性名称
           name = PropertyNamer.methodToProperty(name);
+          //将setter方法保存到map中，key 是属性名称，value是MethodInvoker封装的对象
           addMethodConflict(conflictingSetters, name, method);
         }
       }
     }
+    //处理具有多个setter方法的属性，从多个方法中选择最合适的method作为该属性的setter方法
     resolveSetterConflicts(conflictingSetters);
   }
 
@@ -205,12 +209,15 @@ public class Reflector {
 
   private void resolveSetterConflicts(Map<String, List<Method>> conflictingSetters) {
     for (String propName : conflictingSetters.keySet()) {
+      //根据属性取出方法列表
       List<Method> setters = conflictingSetters.get(propName);
+      //取出对应属性的getter返回值类型
       Class<?> getterType = getTypes.get(propName);
       Method match = null;
       ReflectionException exception = null;
       for (Method setter : setters) {
         Class<?> paramType = setter.getParameterTypes()[0];
+        //当setter的参数类型和getter的返回类型相同，则是最合适的方法
         if (paramType.equals(getterType)) {
           // should be the best match
           match = setter;
@@ -218,6 +225,7 @@ public class Reflector {
         }
         if (exception == null) {
           try {
+            //找不到与getter相同返回值类型的方法，则进行匹配
             match = pickBetterSetter(match, setter, propName);
           } catch (ReflectionException e) {
             // there could still be the 'best match'
@@ -238,10 +246,13 @@ public class Reflector {
     if (setter1 == null) {
       return setter2;
     }
+    //获取setter的参数类型，根据javabean的约定，setter方法只有一个参数
     Class<?> paramType1 = setter1.getParameterTypes()[0];
     Class<?> paramType2 = setter2.getParameterTypes()[0];
+    //如果paramType1是paramType2的父类或者父接口，则返回paramType2对应的方法
     if (paramType1.isAssignableFrom(paramType2)) {
       return setter2;
+      //如果paramType2是paramType1的父类或者父接口，则返回paramType1对应的方法
     } else if (paramType2.isAssignableFrom(paramType1)) {
       return setter1;
     }
@@ -260,16 +271,27 @@ public class Reflector {
 
   private Class<?> typeToClass(Type src) {
     Class<?> result = null;
+
+    //class类型
     if (src instanceof Class) {
       result = (Class<?>) src;
     } else if (src instanceof ParameterizedType) {
+      //参数化类型,例如List<String>
+      //getRawType 返回参数化类型参数中的类型，例如List<String>,则返回List
+      //getActualTypeArguments 获取参数化列表或者实际类型列表
       result = (Class<?>) ((ParameterizedType) src).getRawType();
     } else if (src instanceof GenericArrayType) {
+      // GenericArrayType 表示的是数组类型且组成元素是 ParameterizedType或者TypeVariable
+      //例如 list<String>[] 或者 T[]
+      //getGenericComponentType 返回数组中的元素类型
       Type componentType = ((GenericArrayType) src).getGenericComponentType();
       if (componentType instanceof Class) {
+        //如果元素类型是class，则将result设置为class<?>[]类型
         result = Array.newInstance((Class<?>) componentType, 0).getClass();
       } else {
+        //否则，递归处理
         Class<?> componentClass = typeToClass(componentType);
+        //获取最终类型的数组
         result = Array.newInstance(componentClass, 0).getClass();
       }
     }
