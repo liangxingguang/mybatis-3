@@ -22,6 +22,10 @@ import org.apache.ibatis.reflection.Reflector;
 /**
  * @author Clinton Begin
  */
+
+/**
+ * 实现相同类型的两个类属性的复制
+ */
 public final class PropertyCopier {
 
   private PropertyCopier() {

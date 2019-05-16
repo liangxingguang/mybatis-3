@@ -20,6 +20,11 @@ import java.util.Iterator;
 /**
  * @author Clinton Begin
  */
+/**
+ * 完成如:item[0].name[0].first[0]这样表达式的解析
+ * 通过迭代的方式对表达式进行解析
+ */
+
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
   private String name;
   private final String indexedName;
