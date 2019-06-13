@@ -45,9 +45,11 @@ public class TypeParameterResolver {
    *         they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveReturnType(Method method, Type srcType) {
+    //获取方法的返回值类型
     Type returnType = method.getGenericReturnType();
+    //获取方法类型
     Class<?> declaringClass = method.getDeclaringClass();
-    return resolveType(returnType, srcType, declaringClass);
+    return resolveType(returnType, srcType,declaringClass );
   }
 
   /**
@@ -93,8 +95,11 @@ public class TypeParameterResolver {
     }
   }
 
+  //处理类型如List<aa>这样的返回值
   private static ParameterizedType resolveParameterizedType(ParameterizedType parameterizedType, Type srcType, Class<?> declaringClass) {
+    //获取返回值类型,例如，List<String>的rawType为List
     Class<?> rawType = (Class<?>) parameterizedType.getRawType();
+    //获取返回值类型中的参数类型,例如，List<String>的参数类型为String
     Type[] typeArgs = parameterizedType.getActualTypeArguments();
     Type[] args = new Type[typeArgs.length];
     for (int i = 0; i < typeArgs.length; i++) {
