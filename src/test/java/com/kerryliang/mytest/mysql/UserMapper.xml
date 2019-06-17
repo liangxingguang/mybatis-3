@@ -24,4 +24,7 @@
     <insert id="save" parameterType="com.kerryliang.mytest.mysql.User" useGeneratedKeys="true">
         insert into tb_user(name, sex, age) values (#{name},#{sex},#{age})
     </insert>
+    <select id="getUsers" resultType="com.kerryliang.mytest.mysql.User">
+        select name, sex, age from tb_user;
+    </select>
 </mapper>
