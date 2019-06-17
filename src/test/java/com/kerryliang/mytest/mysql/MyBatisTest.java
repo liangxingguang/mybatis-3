@@ -15,7 +15,7 @@ public class MyBatisTest {
         SqlSession session = sqlSessionFactory.openSession();
 
         User user = new User();
-        user.setName("admin");
+        user.setName("liangxingguang");
         user.setSex("男");
         user.setAge(26);
 
