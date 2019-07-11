@@ -26,13 +26,23 @@ import java.util.Iterator;
  */
 
 public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
+  //名称
   private String name;
+  //名称加下标
   private final String indexedName;
+  //下标
   private String index;
+  //子表达式
   private final String children;
 
+  /**
+   * fullname结构：item[0].name[0].first[0]
+   *
+   */
   public PropertyTokenizer(String fullname) {
+    //查找第一个.出现的位置
     int delim = fullname.indexOf('.');
+    //存在.这个符号
     if (delim > -1) {
       name = fullname.substring(0, delim);
       children = fullname.substring(delim + 1);
