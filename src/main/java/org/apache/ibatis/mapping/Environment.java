@@ -22,9 +22,13 @@ import org.apache.ibatis.transaction.TransactionFactory;
 /**
  * @author Clinton Begin
  */
+//这个类的值通过XMLConfigBuilder类的environmentsElement方法设置类属性值
 public final class Environment {
+  //id
   private final String id;
+  //事务工厂类(mybatis-config.xml配置文件中的environments标签中的transactionManager)
   private final TransactionFactory transactionFactory;
+  //数据源(mybatis-config.xml配置文件中的environments标签中的dataSource)
   private final DataSource dataSource;
 
   public Environment(String id, TransactionFactory transactionFactory, DataSource dataSource) {
