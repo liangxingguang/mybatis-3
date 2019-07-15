@@ -1,0 +1,2 @@
+# PropertyNamer 类代码分析
+根据javebean中的getXXX,setXXX和isXXX来获取对应的属性名称
