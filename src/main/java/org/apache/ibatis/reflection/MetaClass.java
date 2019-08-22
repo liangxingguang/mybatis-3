@@ -47,6 +47,11 @@ public class MetaClass {
     return new MetaClass(type, reflectorFactory);
   }
 
+  /**
+   * 获取类属性对应的MetaClass对象
+   * @param name
+   * @return
+   */
   public MetaClass metaClassForProperty(String name) {
     Class<?> propType = reflector.getGetterType(name);
     return MetaClass.forClass(propType, reflectorFactory);
@@ -171,6 +176,12 @@ public class MetaClass {
     return reflector.getSetInvoker(name);
   }
 
+  /**
+   * 如果name为itme[0].a,则返回item.a
+   * @param name
+   * @param builder
+   * @return
+   */
   private StringBuilder buildProperty(String name, StringBuilder builder) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {

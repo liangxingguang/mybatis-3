@@ -15,6 +15,10 @@
  */
 package org.apache.ibatis.reflection;
 
+/**
+ * Reflector 工厂接口
+ * 默认实现类为DefaultReflectorFactory
+ */
 public interface ReflectorFactory {
 
   boolean isClassCacheEnabled();

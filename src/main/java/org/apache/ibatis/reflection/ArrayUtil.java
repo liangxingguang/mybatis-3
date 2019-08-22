@@ -20,6 +20,13 @@ import java.util.Arrays;
 /**
  * Provides hashCode, equals and toString methods that can handle array.
  */
+
+/**
+ * 数组工具类，提供数组的hashcode,equals和toString方法来处理数组
+ * 主要逻辑为：先判断对象是不是数组类型，如果不是，则按照普通对象来进行object
+ * 的hashcode，equals和toString
+ * 如果是数组对象，则根据数组元素类型调用java.util.Arrays处理
+ */
 public class ArrayUtil {
 
   /**
