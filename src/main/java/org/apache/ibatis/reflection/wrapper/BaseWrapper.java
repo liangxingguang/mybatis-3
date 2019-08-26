@@ -75,8 +75,10 @@ public abstract class BaseWrapper implements ObjectWrapper {
 
   protected void setCollectionValue(PropertyTokenizer prop, Object collection, Object value) {
     if (collection instanceof Map) {
+      //如果collection为map类型，则index为key
       ((Map) collection).put(prop.getIndex(), value);
     } else {
+      //如果collection为list或者数组类型，则index为下标
       int i = Integer.parseInt(prop.getIndex());
       if (collection instanceof List) {
         ((List) collection).set(i, value);

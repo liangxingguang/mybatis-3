@@ -21,9 +21,12 @@ package org.apache.ibatis.reflection;
  */
 public interface ReflectorFactory {
 
+  //class对象是否被缓存
   boolean isClassCacheEnabled();
 
+  //设置缓存标记
   void setClassCacheEnabled(boolean classCacheEnabled);
 
+  //构建Reflector对象
   Reflector findForClass(Class<?> type);
 }
