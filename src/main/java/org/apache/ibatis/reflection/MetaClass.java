@@ -32,6 +32,8 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * 通过Reflector和PropertyTokenizer的结合使用，实现对复杂表达式的解析
+ * 在XMLConfigBuilder.settingsAsProperties.settingsAsProperties有调用，
+ * 用于检查配置项是否合法
  */
 public class MetaClass {
 

@@ -19,12 +19,18 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
-<mapper namespace="com.kerryliang.mytest.mysql.UserMapper">
-    <insert id="save" parameterType="com.kerryliang.mytest.mysql.User" useGeneratedKeys="true">
-        insert into tb_user(name, sex, age) values (#{name},#{sex},#{age})
-    </insert>
-    <select id="getUsers" resultType="com.kerryliang.mytest.mysql.User">
-        select name, sex, age from tb_user;
+<mapper namespace="com.kerryliang.mytest.mapper.SysUserMapper">
+    <resultMap id="userMap" type="SysUser">
+        <id property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="userPassword" column="user_password"/>
+        <result property="userEmail" column="user_email"/>
+        <result property="userInfo" column="user_info"/>
+        <result property="headImg" column="head_img" jdbcType="BLOB"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <select id="selectById" resultMap="userMap">
+        select * from sys_user where id = #{id}
     </select>
+
 </mapper>

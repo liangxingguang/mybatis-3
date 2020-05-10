@@ -1,4 +1,4 @@
-package com.kerryliang.mytest.mysql;
+package com.kerryliang.mytest.bean;
 
 public class User {
 

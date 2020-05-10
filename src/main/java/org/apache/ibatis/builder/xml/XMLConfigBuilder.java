@@ -103,10 +103,15 @@ public class XMLConfigBuilder extends BaseBuilder {
     try {
       //issue #117 read properties first
       propertiesElement(root.evalNode("properties"));
+      //读取settings中属性
       Properties settings = settingsAsProperties(root.evalNode("settings"));
+      //处理配置中设置的自定义资源处理类
       loadCustomVfs(settings);
+      //处理配置中设置的日志实现
       loadCustomLogImpl(settings);
+      //处理配置中设置的类别名
       typeAliasesElement(root.evalNode("typeAliases"));
+      //处理配置中插件处理
       pluginElement(root.evalNode("plugins"));
       objectFactoryElement(root.evalNode("objectFactory"));
       objectWrapperFactoryElement(root.evalNode("objectWrapperFactory"));
@@ -152,10 +157,18 @@ public class XMLConfigBuilder extends BaseBuilder {
   }
 
   private void loadCustomLogImpl(Properties props) {
+    //设置日记信息类，默认对日志实现进行别名缓存，会根据别名来查找对应的实现类
+    //如果不是别名，则需要配置为类的全路径，根据类全路径，加载对应的实现类对象
     Class<? extends Log> logImpl = resolveClass(props.getProperty("logImpl"));
     configuration.setLogImpl(logImpl);
   }
 
+  /**
+   * 处理typeAliases标签
+   * 如果配置是package，则将配置的包路径下面的所有类加入到别名中,结构为：类名：类对象
+   * 如果配置为alias 这需要指定type，添加alias：type到别名中去
+   * @param parent
+   */
   private void typeAliasesElement(XNode parent) {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
@@ -184,6 +197,7 @@ public class XMLConfigBuilder extends BaseBuilder {
     if (parent != null) {
       for (XNode child : parent.getChildren()) {
         String interceptor = child.getStringAttribute("interceptor");
+        //插件属性
         Properties properties = child.getChildrenAsProperties();
         Interceptor interceptorInstance = (Interceptor) resolveClass(interceptor).newInstance();
         interceptorInstance.setProperties(properties);
